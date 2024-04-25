@@ -5,10 +5,6 @@
 #include <imgui_impl_opengl3.h>
 
 #include "Assertion.h"
-#include "GeometryPass2D.h"
-#include "GlyphPass2D.h"
-#include "SpritePass2D.h"
-#include "Texture2D.h"
 #include "RenderModule.h"
 
 bool RenderModule::bIsInit = false;
@@ -19,15 +15,14 @@ Mat4x4 RenderModule::ortho;
 wchar_t RenderModule::lastErrorMessage[MAX_BUFFER_SIZE];
 uint32_t RenderModule::cacheSize = 0;
 std::array<std::unique_ptr<IResource>, RenderModule::MAX_RESOURCE_SIZE> RenderModule::cache;
-std::unordered_map<std::string, IResource*> RenderModule::shaderCache;
 
 /**
- * @brief OpenGL�� �����Դϴ�.
+ * @brief OpenGL의 버전입니다.
  *
- * @note �� ���� 4.6���� �����Ǿ� �ֽ��ϴ�.
+ * @note 이 값은 4.6으로 고정되어 있습니다.
  */
-#define FIX_OPENGL_MAJOR_VERSION 4 // OpenGL ��(4) �����Դϴ�.
-#define FIX_OPENGL_MINOR_VERSION 6 // OpenGL ��(6) �����Դϴ�.
+#define FIX_OPENGL_MAJOR_VERSION 4 // OpenGL 주(4) 버전입니다.
+#define FIX_OPENGL_MINOR_VERSION 6 // OpenGL 부(6) 버전입니다.
 
 RenderModule::Errors RenderModule::Init(HWND windowHandle)
 {
@@ -351,7 +346,7 @@ RenderModule::Errors RenderModule::SetupWGLExtensions()
 		return Errors::ERR_WIN;
 	}
 
-	// WM_DESTROY �޽����� ����������, Platform ��⿡�� �����ϵ��� ����...
+	// WM_DESTROY 메시지를 전송하지만, Platform 모듈에서 무시하도록 구현...
 	if (!DestroyWindow(dummyWindow))
 	{
 		SetLastWindowsErrorMessage();
