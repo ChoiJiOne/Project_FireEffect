@@ -6,6 +6,7 @@ add_subdirectory(glad)
 add_subdirectory(imgui)
 add_subdirectory(jsoncpp)
 add_subdirectory(miniaudio)
+add_subdirectory(Remotery)
 add_subdirectory(stb)
 
 set_target_properties(cgltf glad imgui jsoncpp miniaudio Remotery stb PROPERTIES FOLDER "ThirdParty")
