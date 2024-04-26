@@ -29,6 +29,8 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 	int32_t height = 600;
 	ColorFrameBuffer* colorFrameBuffer = RenderModule::CreateResource<ColorFrameBuffer>(width, height);
 
+	float rate = 0.0f;
+
 	PlatformModule::RunLoop(
 		[&](float deltaSeconds)
 		{
@@ -39,7 +41,7 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 				ImVec2 uv0 = ImVec2(0.0f, 1.0f); // 텍스처 좌측 상단
 				ImVec2 uv1 = ImVec2(1.0f, 0.0f); // 텍스처 우측 하단
 
-				ImGui::Image((void*)(intptr_t)(colorFrameBuffer->GetColorBufferID()), ImVec2(600.0f, 600.0f), uv0, uv1);
+				ImGui::Image((void*)(intptr_t)(colorFrameBuffer->GetColorBufferID()), ImVec2(650.0f, 650.0f), uv0, uv1);
 			}
 			ImGui::End();
 
@@ -47,6 +49,8 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 			{
 				ImGui::SetWindowPos(ImVec2(700.0f, 0.0f));
 				ImGui::SetWindowSize(ImVec2(300.0f, 800.0f));
+				ImGui::SliderFloat("Rate", &rate, 0.0f, 1.0f);
+
 			}
 			ImGui::End();
 			
@@ -54,6 +58,7 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 
 			fireEffect->Bind();
 			{
+				fireEffect->SetUniform("rate", rate);
 				colorFrameBuffer->Bind();
 				colorFrameBuffer->Clear(0.0f, 0.0f, 0.0f, 0.0f);
 				glBindImageTexture(0, colorFrameBuffer->GetColorBufferID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);

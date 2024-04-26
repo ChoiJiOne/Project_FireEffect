@@ -4,19 +4,74 @@ layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 layout(binding = 0, rgba32f) uniform image2D outputImage;
 
-float rand(vec2 co)
+vec2 hash(vec2 p)
 {
-    return fract(sin(dot(co.xy, vec2(12.9898f, 78.233f))) * 43758.5453f);
+    p = vec2(dot(p, vec2(127.1f,311.7f)), dot(p, vec2(269.5f,183.3f)));
+    return -1.0f + 2.0f * fract(sin(p) * 43758.5453123f);
 }
+
+float noise(vec2 p)
+{
+    const float K1 = 0.366025404; // (sqrt(3)-1)/2;
+    const float K2 = 0.211324865; // (3-sqrt(3))/6;
+
+	vec2 i = floor(p + (p.x + p.y) * K1);
+    vec2 a = p - i + (i.x + i.y) * K2;
+    vec2 o = step(a.yx, a.xy);
+    vec2 b = a - o + K2;
+	vec2 c = a - 1.0f + 2.0f * K2;
+    vec3 h = max(0.5f - vec3(dot(a,a), dot(b,b), dot(c,c) ), 0.0f);
+
+	vec3 n = h * h * h * h * vec3(dot(a, hash(i + 0.0f)), dot(b, hash(i + o)), dot(c, hash(i + 1.0f)));
+
+    return dot(n, vec3(70.0f));
+}
+
+float fbm ( in vec2 p ) 
+{
+    const mat2 m = mat2
+    (
+        +1.6f, +1.2f, 
+        -1.2f, +1.6f
+    );
+
+    float f = 0.0;
+    f = 0.5000f * noise(p); 
+    p = m * p;
+
+    f += 0.2500f * noise(p); 
+    p = m*p;
+
+    f += 0.1250f * noise(p); 
+    p = m*p;
+
+    f += 0.0625f * noise(p); 
+    p = m*p;
+
+    f = 0.5f + 0.5f * f;
+
+    return f;
+}
+
+uniform float rate;
 
 void main()
 {
     ivec2 texelCoords = ivec2(gl_GlobalInvocationID.xy);
     ivec2 size = imageSize(outputImage);
-    vec2 texCoords = vec2(texelCoords) / vec2(size);
+    vec2 uv = vec2(texelCoords) / vec2(size);
 
-    float x = rand(texCoords);
+    float x = 0.0f;
+    if(uv.x < rate)
+    {
+        x = noise(uv * 10.0f);
+        x = x * 0.5f + 0.5f;
+    }
+    else
+    {
+        x = fbm(uv * 10.0f);
+    }
+    
     vec4 colorRGBA = vec4(x, x, x, 1.0f);
-
     imageStore(outputImage, texelCoords, colorRGBA);
 }
