@@ -22,13 +22,35 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 	RenderModule::SetDepthMode(false);
 	RenderModule::SetPointSizeMode(true);
 
+	Shader* computeShader = RenderModule::CreateResource<Shader>("Shader/Shader.comp");
+
+	uint32_t width = 700;
+	uint32_t height = 700;
+	uint32_t output;
+	glGenTextures(1, &output);
+	glBindTexture(GL_TEXTURE_2D, output);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+	glTextureParameteri(output, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(output, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTextureParameteri(output, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(output, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	PlatformModule::RunLoop(
 		[&](float deltaSeconds)
 		{
+			computeShader->Bind();
+			{
+				glBindImageTexture(0, output, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+				glDispatchCompute(width / 32 + 1, height / 32 + 1, 1);
+			}
+			computeShader->Unbind();
+
 			ImGui::Begin("Effect", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 			{
 				ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
 				ImGui::SetWindowSize(ImVec2(700.0f, 800.0f));
+				ImGui::Image((void*)(intptr_t)(output), ImVec2(700.0f, 700.0f));
 			}
 			ImGui::End();
 
@@ -39,11 +61,13 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 			}
 			ImGui::End();
 
-			RenderModule::BeginFrame(0.0f, 0.0f, 0.0f, 1.0f);
+			RenderModule::BeginFrame(1.0f, 1.0f, 1.0f, 1.0f);
 			RenderModule::EndFrame();
 		}
 	);
-	
+
+	glDeleteTextures(1, &output);
+
 	PlatformModule::Uninit();
 	CrashModule::Uninit();
 	return 0;
