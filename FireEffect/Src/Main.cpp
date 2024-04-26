@@ -30,6 +30,7 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 	ColorFrameBuffer* colorFrameBuffer = RenderModule::CreateResource<ColorFrameBuffer>(width, height);
 
 	float rate = 0.0f;
+	float normalStrength = 40.0f;
 
 	PlatformModule::RunLoop(
 		[&](float deltaSeconds)
@@ -50,6 +51,7 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 				ImGui::SetWindowPos(ImVec2(700.0f, 0.0f));
 				ImGui::SetWindowSize(ImVec2(300.0f, 800.0f));
 				ImGui::SliderFloat("Rate", &rate, 0.0f, 1.0f);
+				ImGui::SliderFloat("normalStrength", &normalStrength, 0.0f, 60.0f);
 
 			}
 			ImGui::End();
@@ -59,6 +61,7 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 			fireEffect->Bind();
 			{
 				fireEffect->SetUniform("rate", rate);
+				fireEffect->SetUniform("normalStrength", normalStrength);
 				colorFrameBuffer->Bind();
 				colorFrameBuffer->Clear(0.0f, 0.0f, 0.0f, 0.0f);
 				glBindImageTexture(0, colorFrameBuffer->GetColorBufferID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);

@@ -53,7 +53,22 @@ float fbm ( in vec2 p )
     return f;
 }
 
+
 uniform float rate;
+uniform float normalStrength;
+
+vec3 bumpMap(vec2 uv, ivec2 size)
+{
+    vec2 s = vec2(1.0f) / vec2(size);
+    float p = fbm(uv);
+    float h1 = fbm(uv + s * vec2(1.0f, 0.0f));
+    float v1 = fbm(uv + s * vec2(0.0f, 1.0f));
+
+    vec2 xy = (p - vec2(h1, v1)) * normalStrength;
+
+    return vec3(xy + 0.5f, 1.0f);
+}
+
 
 void main()
 {
@@ -61,17 +76,17 @@ void main()
     ivec2 size = imageSize(outputImage);
     vec2 uv = vec2(texelCoords) / vec2(size);
 
-    float x = 0.0f;
+    vec4 colorRGBA = vec4(0.0f);
     if(uv.x < rate)
     {
-        x = noise(uv * 10.0f);
-        x = x * 0.5f + 0.5f;
+        float x = fbm(uv * 10.0f);
+        colorRGBA = vec4(x, x, x, 1.0f);
     }
     else
     {
-        x = fbm(uv * 10.0f);
+        vec3 normal = bumpMap((uv.xy - vec2(0.5f, 0.0f)) * 10.0f, size);
+        colorRGBA = vec4(normal, 1.0f);
     }
     
-    vec4 colorRGBA = vec4(x, x, x, 1.0f);
     imageStore(outputImage, texelCoords, colorRGBA);
 }
