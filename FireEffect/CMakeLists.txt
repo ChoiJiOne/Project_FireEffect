@@ -6,11 +6,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(PROJECT_NAME "FireEffect")
 
-# set(EXE_ICON_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../Resource/Icon/Icon.ico")
-# configure_file(
-#     "${CMAKE_CURRENT_SOURCE_DIR}/Res/Resource.rc.in"
-#     "${CMAKE_CURRENT_SOURCE_DIR}/Res/Resource.rc"
-# )
+set(EXE_ICON_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../Resource/Icon/Icon.ico")
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/Res/Resource.rc.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Res/Resource.rc"
+)
 
 set(PROJECT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 set(PROJECT_INCLUDE_PATH "${PROJECT_PATH}/Inc")
