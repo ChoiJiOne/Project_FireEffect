@@ -2,13 +2,20 @@
 
 layout(local_size_x = 32, local_size_y = 32) in;
 
-layout(binding = 0, rgba32f) uniform image2D outputImage;
+layout(binding = 0, rgba32f) uniform image2D inputImage;
+layout(binding = 1, rgba32f) uniform image2D outputImage;
 
 void main()
 {
     ivec2 texCoords = ivec2(gl_GlobalInvocationID.xy);
     ivec2 size = imageSize(outputImage);
+    
+    vec4 colorRGBA = vec4(0.0f);
+    int offset = texCoords.x / 32 + texCoords.y / 32;
+    if(offset % 2 == 0)
+    {
+        colorRGBA = vec4(1.0);
+    }
 
-    vec4 colorRGBA = (texCoords.x / 32 + texCoords.y / 32) % 2 == 0 ? vec4(0) : vec4(1);
     imageStore(outputImage, texCoords, colorRGBA);
 }
