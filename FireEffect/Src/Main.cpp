@@ -26,26 +26,18 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 
 	uint32_t width = 700;
 	uint32_t height = 700;
-
-	uint32_t input;
-	glGenTextures(1, &input);
-	glBindTexture(GL_TEXTURE_2D, input);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
-	glTextureParameteri(input, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTextureParameteri(input, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTextureParameteri(input, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(input, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	uint32_t output;
-	glGenTextures(1, &output);
-	glBindTexture(GL_TEXTURE_2D, output);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
-	glTextureParameteri(output, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTextureParameteri(output, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTextureParameteri(output, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(output, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	uint32_t image[1];
+	glGenTextures(1, image);
+	for (uint32_t index = 0; index < 1; ++index)
+	{
+		glBindTexture(GL_TEXTURE_2D, image[index]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+		glTextureParameteri(image[index], GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(image[index], GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTextureParameteri(image[index], GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTextureParameteri(image[index], GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 
 	PlatformModule::RunLoop(
 		[&](float deltaSeconds)
@@ -54,7 +46,10 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 			{
 				ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
 				ImGui::SetWindowSize(ImVec2(700.0f, 800.0f));
-				ImGui::Image((void*)(intptr_t)(output), ImVec2(700.0f, 700.0f));
+				ImVec2 uv0 = ImVec2(0.0f, 1.0f); // 텍스처 좌측 상단
+				ImVec2 uv1 = ImVec2(1.0f, 0.0f); // 텍스처 우측 하단
+
+				ImGui::Image((void*)(intptr_t)(image[0]), ImVec2(700.0f, 700.0f), uv0, uv1);
 			}
 			ImGui::End();
 
@@ -67,9 +62,9 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 
 			fireEffect->Bind();
 			{
-				glBindImageTexture(0, input, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
-				glBindImageTexture(1, output, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-				glDispatchCompute(width / 32 + 1, height / 32 + 1, 1);
+				glBindImageTexture(0, image[0], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+				glDispatchCompute(width, height, 1);
+				glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 			}
 			fireEffect->Unbind();
 
@@ -78,8 +73,7 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 		}
 	);
 
-	glDeleteTextures(1, &output);
-	glDeleteTextures(1, &input);
+	glDeleteTextures(1, image);
 
 	PlatformModule::Uninit();
 	CrashModule::Uninit();
