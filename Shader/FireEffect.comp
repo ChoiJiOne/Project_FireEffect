@@ -53,9 +53,11 @@ float fbm ( in vec2 p )
     return f;
 }
 
-
-uniform float rate;
+uniform float time;
 uniform float normalStrength;
+// uniform vec2 fireMovement;
+uniform vec2 distortionMovement;
+// uniform float distortionStrength;
 
 vec3 bumpMap(vec2 uv, ivec2 size)
 {
@@ -76,17 +78,8 @@ void main()
     ivec2 size = imageSize(outputImage);
     vec2 uv = vec2(texelCoords) / vec2(size);
 
-    vec4 colorRGBA = vec4(0.0f);
-    if(uv.x < rate)
-    {
-        float x = fbm(uv * 10.0f);
-        colorRGBA = vec4(x, x, x, 1.0f);
-    }
-    else
-    {
-        vec3 normal = bumpMap((uv.xy - vec2(0.5f, 0.0f)) * 10.0f, size);
-        colorRGBA = vec4(normal, 1.0f);
-    }
-    
+    vec3 normal = bumpMap(uv * vec2(1.0f, 0.3f) + distortionMovement * time, size);
+    vec4 colorRGBA = vec4(normal, 1.0f);
+
     imageStore(outputImage, texelCoords, colorRGBA);
 }

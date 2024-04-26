@@ -10,6 +10,7 @@
 #include "RenderModule.h"
 #include "Shader.h"
 #include "ColorFrameBuffer.h"
+#include "GameTimer.h"
 
 int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR pCmdLine, _In_ int32_t nCmdShow)
 {
@@ -29,12 +30,19 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 	int32_t height = 600;
 	ColorFrameBuffer* colorFrameBuffer = RenderModule::CreateResource<ColorFrameBuffer>(width, height);
 
-	float rate = 0.0f;
 	float normalStrength = 40.0f;
+	Vec2f fireMovement = Vec2f(-0.01f, -0.5f);
+	Vec2f distortionMovement = Vec2f(-0.01f, -0.3f);
+	float distortionStrength = 0.1f;
+
+	GameTimer timer;
+	timer.Reset();
 
 	PlatformModule::RunLoop(
 		[&](float deltaSeconds)
 		{
+			timer.Tick();
+
 			ImGui::Begin("Effect", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 			{
 				ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
@@ -50,9 +58,10 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 			{
 				ImGui::SetWindowPos(ImVec2(700.0f, 0.0f));
 				ImGui::SetWindowSize(ImVec2(300.0f, 800.0f));
-				ImGui::SliderFloat("Rate", &rate, 0.0f, 1.0f);
-				ImGui::SliderFloat("normalStrength", &normalStrength, 0.0f, 60.0f);
-
+				ImGui::SliderFloat("normalStrength", &normalStrength, 0.0f, 100.0f);
+				//ImGui::SliderFloat2("fireMovement", fireMovement.data, -1.0f, 1.0f);
+				ImGui::SliderFloat2("distortionMovement", distortionMovement.data, -1.0f, 1.0f);
+				//ImGui::SliderFloat("distortionStrength", &distortionStrength, 0.0f, 1.0f);
 			}
 			ImGui::End();
 			
@@ -60,8 +69,12 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 
 			fireEffect->Bind();
 			{
-				fireEffect->SetUniform("rate", rate);
+				fireEffect->SetUniform("time", timer.GetTotalSeconds());
 				fireEffect->SetUniform("normalStrength", normalStrength);
+				//fireEffect->SetUniform("fireMovement", fireMovement);
+				fireEffect->SetUniform("distortionMovement", distortionMovement);
+				//fireEffect->SetUniform("distortionStrength", distortionStrength);
+
 				colorFrameBuffer->Bind();
 				colorFrameBuffer->Clear(0.0f, 0.0f, 0.0f, 0.0f);
 				glBindImageTexture(0, colorFrameBuffer->GetColorBufferID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
