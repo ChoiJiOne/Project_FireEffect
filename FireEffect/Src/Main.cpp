@@ -29,9 +29,9 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 	int32_t height = 600;
 	ColorFrameBuffer* colorFrameBuffer = RenderModule::CreateResource<ColorFrameBuffer>(width, height);
 
-	float a = 0.0f;
-	float b = 0.0f;
-	float c = 0.0f;
+	float a = 12.9898f;
+	float b = 78.233f;
+	float c = 43758.5453f;
 	
 	PlatformModule::RunLoop(
 		[&](float deltaSeconds)
@@ -63,6 +63,7 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 
 			fireEffect->Bind();
 			{
+				colorFrameBuffer->Bind();
 				fireEffect->SetUniform("a", a);
 				fireEffect->SetUniform("b", b);
 				fireEffect->SetUniform("c", c);
@@ -71,6 +72,7 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 				glBindImageTexture(0, colorFrameBuffer->GetColorBufferID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 				glDispatchCompute(width, height, 1);
 				glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+				colorFrameBuffer->Unbind();
 			}
 			fireEffect->Unbind();
 
