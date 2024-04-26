@@ -70,6 +70,19 @@ public:
 
 
 	/**
+	 * @brief 컬러 버퍼의 크기를 얻습니다.
+	 * 
+	 * @param outWidth 컬러 버퍼의 가로 크기입니다.
+	 * @param outHeight 컬러 버퍼의 세로 크기입니다.
+	 */
+	void GetSize(uint32_t& outWidth, uint32_t& outHeight)
+	{
+		outWidth = width_;
+		outHeight = height_;
+	}
+
+
+	/**
 	 * @brief 컬러 버퍼 오브젝트의 ID를 얻습니다.
 	 * 
 	 * @return 컬러 버퍼 오브젝트의 ID를 반환합니다.
@@ -79,6 +92,18 @@ public:
 
 private:
 	/**
+	 * @brief 프레임 버퍼의 가로 크기입니다.
+	 */
+	uint32_t width_ = 0;
+
+
+	/**
+	 * @brief 프레임 버퍼의 세로 크기입니다.
+	 */
+	uint32_t height_ = 0;
+
+
+	/**
 	 * @brief 프레임 버퍼 오브젝트의 ID입니다.
 	 */
 	uint32_t framebufferID_ = 0;
@@ -87,5 +112,5 @@ private:
 	/**
 	 * @brief 컬러 버퍼 오브젝트의 ID입니다.
 	 */
-	uint32_t colorBufferID_ ;
+	uint32_t colorBufferID_;
 };

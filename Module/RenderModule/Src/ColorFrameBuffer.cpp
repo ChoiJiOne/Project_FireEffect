@@ -4,6 +4,8 @@
 #include "ColorFrameBuffer.h"
 
 ColorFrameBuffer::ColorFrameBuffer(int32_t bufferWidth, int32_t bufferHeight)
+	: width_(bufferWidth)
+	, height_(bufferHeight)
 {
 	GL_FAILED(glGenFramebuffers(1, &framebufferID_));
 	GL_FAILED(glBindFramebuffer(GL_FRAMEBUFFER, framebufferID_));
