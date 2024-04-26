@@ -1,46 +1,26 @@
 #version 460 core
 
-layout(local_size_x = 1, local_size_y = 1) in;
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-layout(binding = 0, rgba32f) uniform image2D inputImage;
-layout(binding = 1, rgba32f) uniform image2D outputImage;
+layout(binding = 0, rgba32f) uniform image2D outputImage;
 
-const int MAX_SIZE = 9;
-const ivec2 offsets[MAX_SIZE] =
+uniform float a;
+uniform float b;
+uniform float c;
+
+float rand(vec2 co)
 {
-    ivec2(-1, +1),
-    ivec2(+0, +1),
-    ivec2(+1, +1),
-    ivec2(-1, +0),
-    ivec2(+0, +0),
-    ivec2(+1, +0),
-    ivec2(-1, -1),
-    ivec2(+0, -1),
-    ivec2(+1, -1),
-};
+    return fract(sin(dot(co.xy, vec2(a, b))) * c);
+}
 
 void main()
 {
     ivec2 texelCoords = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 size = imageSize(inputImage);
+    ivec2 size = imageSize(outputImage);
+    vec2 texCoords = vec2(texelCoords) / vec2(size);
 
-    if(texelCoords.x < 1 || texelCoords.x >= size.x || texelCoords.y < 1 || texelCoords.y >= size.y)
-    {
-        return;
-    }
+    float x = rand(texCoords);
+    vec4 colorRGBA = vec4(x, x, x, 1.0f);
 
-    vec4 colorRGBA = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-    for(int index = 0; index < MAX_SIZE; ++index)
-    {
-        colorRGBA += imageLoad(inputImage, texelCoords + offsets[index]);
-    }
-
-    colorRGBA /= float(MAX_SIZE);
-
-    if(texelCoords.y < 8)
-    {
-        colorRGBA = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    }
-
-    imageStore(outputImage, texelCoords + ivec2(0, 2), colorRGBA);
+    imageStore(outputImage, texelCoords, colorRGBA);
 }
