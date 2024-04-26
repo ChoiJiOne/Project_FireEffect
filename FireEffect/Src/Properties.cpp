@@ -30,9 +30,23 @@ void Properties::Tick(float deltaSeconds)
 	ImGui::Begin("Properties", nullptr, windowFlags_);
 	ImGui::SetWindowPos(location_);
 	ImGui::SetWindowSize(size_);
-	ImGui::SliderFloat2("fireMovement", fireMovement_.data, -1.0f, 1.0f);
-	ImGui::SliderFloat2("distortionMovement", distortionMovement_.data, -1.0f, 1.0f);
-	ImGui::SliderFloat("normalStrength", &normalStrength_, 0.0f, 100.0f);
+
+	ImGui::Text("Fire Movement");
+	ImGui::SliderFloat2("Fire", fireMovement_.data, -1.0f, 1.0f);
+	
+	ImGui::Text("Distortion Movement");
+	ImGui::SliderFloat2("Distortion", distortionMovement_.data, -1.0f, 1.0f);
+
+	ImGui::Text("Normal Strength");
+	ImGui::SliderFloat("Normal", &normalStrength_, 0.0f, 100.0f);
+
+	if (ImGui::Button("Reset"))
+	{
+		fireMovement_ = Vec2f(-0.01f, -0.5f);
+		distortionMovement_ = Vec2f(-0.01f, -0.3f);
+		normalStrength_ = 40.0f;
+	}
+
 	ImGui::End();
 }
 
