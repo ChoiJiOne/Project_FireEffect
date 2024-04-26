@@ -8,6 +8,7 @@ FireEffect::FireEffect(ColorFrameBuffer* colorFrameBuffer)
 {
 	location_ = ImVec2(0.0f, 0.0f);
 	size_ = ImVec2(700.0f, 800.0f);
+	textureSize_ = ImVec2(700.0f, 700.0f);
 }
 
 FireEffect::~FireEffect()
@@ -25,13 +26,13 @@ void FireEffect::Tick(float deltaSeconds)
 	ImGui::SetWindowSize(size_);
 	
 	ImVec2 windowSize = ImGui::GetWindowSize();
-	windowSize.x -= 700.0f;
-	windowSize.y -= 700.0f;
+	windowSize.x -= textureSize_.x;
+	windowSize.y -= textureSize_.y;
 	windowSize.x *= 0.5f;
 	windowSize.y *= 0.5f;
 
 	ImGui::SetCursorPos(windowSize);
-	ImGui::Image((void*)(intptr_t)(colorFrameBuffer_->GetColorBufferID()), ImVec2(700.0f, 700.0f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+	ImGui::Image((void*)(intptr_t)(colorFrameBuffer_->GetColorBufferID()), textureSize_, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 	ImGui::End();
 }
 

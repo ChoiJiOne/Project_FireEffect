@@ -76,4 +76,10 @@ private:
 	 * @brief ImGui 내의 크기입니다.
 	 */
 	ImVec2 size_;
+
+
+	/**
+	 * @brief ImGui 텍스처의 크기입니다.
+	 */
+	ImVec2 textureSize_;
 };
