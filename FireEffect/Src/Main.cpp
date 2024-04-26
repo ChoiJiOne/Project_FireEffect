@@ -11,6 +11,8 @@
 #include "Shader.h"
 #include "ColorFrameBuffer.h"
 #include "GameTimer.h"
+#include "FireEffect.h"
+#include "EntityManager.h"
 
 int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR pCmdLine, _In_ int32_t nCmdShow)
 {
@@ -24,15 +26,19 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 	RenderModule::SetDepthMode(false);
 	RenderModule::SetPointSizeMode(true);
 
+	EntityManager::Get().Startup();
+
 	Shader* fireEffect = RenderModule::CreateResource<Shader>("Shader/FireEffect.comp");
 
-	int32_t width = 600;
-	int32_t height = 600;
+	int32_t width = 900;
+	int32_t height = 900;
 	ColorFrameBuffer* colorFrameBuffer = RenderModule::CreateResource<ColorFrameBuffer>(width, height);
 	
 	Vec2f fireMovement = Vec2f(-0.01f, -0.5f);
 	Vec2f distortionMovement = Vec2f(-0.01f, -0.3f);
 	float normalStrength = 40.0f;
+
+	FireEffect* effect = EntityManager::Get().CreateEntity<FireEffect>(colorFrameBuffer);
 
 	GameTimer timer;
 	timer.Reset();
@@ -42,16 +48,7 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 		{
 			timer.Tick();
 
-			ImGui::Begin("Effect", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-			{
-				ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
-				ImGui::SetWindowSize(ImVec2(700.0f, 800.0f));
-				ImVec2 uv0 = ImVec2(0.0f, 1.0f); // 텍스처 좌측 상단
-				ImVec2 uv1 = ImVec2(1.0f, 0.0f); // 텍스처 우측 하단
-
-				ImGui::Image((void*)(intptr_t)(colorFrameBuffer->GetColorBufferID()), ImVec2(650.0f, 650.0f), uv0, uv1);
-			}
-			ImGui::End();
+			effect->Tick(deltaSeconds);
 
 			ImGui::Begin("Properties", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 			{
@@ -84,7 +81,9 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 			RenderModule::EndFrame();
 		}
 	);
-	
+
+	EntityManager::Get().Shutdown();
+
 	PlatformModule::Uninit();
 	CrashModule::Uninit();
 	return 0;
