@@ -12,7 +12,7 @@ Properties::Properties(ColorFrameBuffer* colorFrameBuffer)
 {
 	location_ = ImVec2(700.0f, 0.0f);
 	size_ = ImVec2(300.0f, 800.0f);
-	fireEffect_ = RenderModule::CreateResource<Shader>("Shader/FireEffect.comp");
+	fireEffect_ = RenderModule::CreateResource<Shader>("Resource/Shader/FireEffect.comp");
 }
 
 Properties::~Properties()
