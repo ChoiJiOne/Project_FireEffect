@@ -52,6 +52,7 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 				ImGui::SetWindowPos(ImVec2(700.0f, 0.0f));
 				ImGui::SetWindowSize(ImVec2(300.0f, 800.0f));
 
+				ImGui::Text("Random");
 				ImGui::SliderFloat("a", &a, 0.0f, 25.0f);
 				ImGui::SliderFloat("b", &b, 0.0f, 150.0f);
 				ImGui::SliderFloat("c", &c, 0.0f, 100000.0f);
