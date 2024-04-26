@@ -4,17 +4,22 @@ layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 layout(binding = 0, rgba32f) uniform image2D outputImage;
 
-vec2 hash(vec2 p)
+uniform float time;
+uniform vec2 fireMovement;
+uniform vec2 distortionMovement;
+uniform float normalStrength;
+
+const float K1 = 0.366025404; // (sqrt(3)-1)/2;
+const float K2 = 0.211324865; // (3-sqrt(3))/6;
+
+vec2 Hash(vec2 p)
 {
-    p = vec2(dot(p, vec2(127.1f,311.7f)), dot(p, vec2(269.5f,183.3f)));
+    p = vec2(dot(p, vec2(127.1f, 311.7f)), dot(p, vec2(269.5f, 183.3f)));
     return -1.0f + 2.0f * fract(sin(p) * 43758.5453123f);
 }
 
-float noise(vec2 p)
+float Noise(vec2 p)
 {
-    const float K1 = 0.366025404; // (sqrt(3)-1)/2;
-    const float K2 = 0.211324865; // (3-sqrt(3))/6;
-
 	vec2 i = floor(p + (p.x + p.y) * K1);
     vec2 a = p - i + (i.x + i.y) * K2;
     vec2 o = step(a.yx, a.xy);
@@ -22,12 +27,12 @@ float noise(vec2 p)
 	vec2 c = a - 1.0f + 2.0f * K2;
     vec3 h = max(0.5f - vec3(dot(a,a), dot(b,b), dot(c,c) ), 0.0f);
 
-	vec3 n = h * h * h * h * vec3(dot(a, hash(i + 0.0f)), dot(b, hash(i + o)), dot(c, hash(i + 1.0f)));
+	vec3 n = h * h * h * h * vec3(dot(a, Hash(i + 0.0f)), dot(b, Hash(i + o)), dot(c, Hash(i + 1.0f)));
 
     return dot(n, vec3(70.0f));
 }
 
-float fbm ( in vec2 p ) 
+float Fbm(vec2 p) 
 {
     const mat2 m = mat2
     (
@@ -36,16 +41,16 @@ float fbm ( in vec2 p )
     );
 
     float f = 0.0;
-    f = 0.5000f * noise(p); 
+    f = 0.5000f * Noise(p); 
     p = m * p;
 
-    f += 0.2500f * noise(p); 
+    f += 0.2500f * Noise(p); 
     p = m*p;
 
-    f += 0.1250f * noise(p); 
+    f += 0.1250f * Noise(p); 
     p = m*p;
 
-    f += 0.0625f * noise(p); 
+    f += 0.0625f * Noise(p); 
     p = m*p;
 
     f = 0.5f + 0.5f * f;
@@ -53,24 +58,17 @@ float fbm ( in vec2 p )
     return f;
 }
 
-uniform float time;
-uniform float normalStrength;
-// uniform vec2 fireMovement;
-uniform vec2 distortionMovement;
-// uniform float distortionStrength;
-
-vec3 bumpMap(vec2 uv, ivec2 size)
+vec3 NormalMap(vec2 uv, ivec2 size)
 {
     vec2 s = vec2(1.0f) / vec2(size);
-    float p = fbm(uv);
-    float h1 = fbm(uv + s * vec2(1.0f, 0.0f));
-    float v1 = fbm(uv + s * vec2(0.0f, 1.0f));
+    float p = Fbm(uv);
+    float h1 = Fbm(uv + s * vec2(1.0f, 0.0f));
+    float v1 = Fbm(uv + s * vec2(0.0f, 1.0f));
 
     vec2 xy = (p - vec2(h1, v1)) * normalStrength;
 
     return vec3(xy + 0.5f, 1.0f);
 }
-
 
 void main()
 {
@@ -78,8 +76,19 @@ void main()
     ivec2 size = imageSize(outputImage);
     vec2 uv = vec2(texelCoords) / vec2(size);
 
-    vec3 normal = bumpMap(uv * vec2(1.0f, 0.3f) + distortionMovement * time, size);
-    vec4 colorRGBA = vec4(normal, 1.0f);
+    vec3 normal = NormalMap(uv * vec2(1.0f, 0.3f) + distortionMovement * time, size);
+    vec2 displacement = clamp((normal.xy - 0.5f) * 0.1f, -1.0f, 1.0f);
+
+    uv += displacement;
+
+    vec2 uvT = (uv * vec2(1.0f, 0.5f)) + fireMovement * time;
+    float n = pow(Fbm(8.0f * uvT), 1.0f);
+
+    float gradient = pow(1.0f - uv.y, 2.0f) * 5.0f;
+    float finalNoise = n * gradient;
+
+    vec3 color = finalNoise * vec3(2.0f * n, 2.0f * n * n * n, n * n * n * n);
+    vec4 colorRGBA = vec4(color, 1.0f);
 
     imageStore(outputImage, texelCoords, colorRGBA);
 }
