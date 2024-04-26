@@ -1,21 +1,16 @@
 #version 460 core
 
-layout(local_size_x = 32, local_size_y = 32) in;
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-layout(binding = 0, rgba32f) uniform image2D inputImage;
-layout(binding = 1, rgba32f) uniform image2D outputImage;
+layout(binding = 0, rgba32f) uniform image2D outputImage;
 
 void main()
 {
-    ivec2 texCoords = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 size = imageSize(outputImage);
-    
-    vec4 colorRGBA = vec4(0.0f);
-    int offset = texCoords.x / 32 + texCoords.y / 32;
-    if(offset % 2 == 0)
-    {
-        colorRGBA = vec4(1.0);
-    }
+    ivec2 texelCoords = ivec2(gl_GlobalInvocationID.xy);
 
-    imageStore(outputImage, texCoords, colorRGBA);
+    vec4 colorRGBA = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    colorRGBA.x = float(texelCoords.x) / float(gl_NumWorkGroups.x);
+    colorRGBA.y = float(texelCoords.y) / float(gl_NumWorkGroups.y);
+    
+    imageStore(outputImage, texelCoords, colorRGBA);
 }
