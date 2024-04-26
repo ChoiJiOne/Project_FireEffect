@@ -203,13 +203,14 @@ public:
 			}
 		}
 
-		if (resourceID != -1)
+		if (resourceID != -1 && cache[resourceID])
 		{
-			if (cache[resourceID] && cache[resourceID]->IsInitialized())
+			if (cache[resourceID]->IsInitialized())
 			{
 				cache[resourceID]->Release();
-				cache[resourceID].reset();
 			}
+
+			cache[resourceID].reset();
 		}
 	}
 

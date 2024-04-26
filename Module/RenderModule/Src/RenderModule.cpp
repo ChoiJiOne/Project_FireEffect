@@ -76,9 +76,13 @@ RenderModule::Errors RenderModule::Uninit()
 
 	for (std::size_t index = 0; index < cacheSize; ++index)
 	{
-		if (cache[index] && cache[index]->IsInitialized())
+		if (cache[index])
 		{
-			cache[index]->Release();
+			if (cache[index]->IsInitialized())
+			{
+				cache[index]->Release();
+			}
+
 			cache[index].reset();
 		}
 	}
