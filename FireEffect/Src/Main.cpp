@@ -29,11 +29,10 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 	int32_t width = 600;
 	int32_t height = 600;
 	ColorFrameBuffer* colorFrameBuffer = RenderModule::CreateResource<ColorFrameBuffer>(width, height);
-
-	float normalStrength = 40.0f;
+	
 	Vec2f fireMovement = Vec2f(-0.01f, -0.5f);
 	Vec2f distortionMovement = Vec2f(-0.01f, -0.3f);
-	float distortionStrength = 0.1f;
+	float normalStrength = 40.0f;
 
 	GameTimer timer;
 	timer.Reset();
@@ -58,10 +57,9 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 			{
 				ImGui::SetWindowPos(ImVec2(700.0f, 0.0f));
 				ImGui::SetWindowSize(ImVec2(300.0f, 800.0f));
-				ImGui::SliderFloat("normalStrength", &normalStrength, 0.0f, 100.0f);
-				//ImGui::SliderFloat2("fireMovement", fireMovement.data, -1.0f, 1.0f);
+				ImGui::SliderFloat2("fireMovement", fireMovement.data, -1.0f, 1.0f);
 				ImGui::SliderFloat2("distortionMovement", distortionMovement.data, -1.0f, 1.0f);
-				//ImGui::SliderFloat("distortionStrength", &distortionStrength, 0.0f, 1.0f);
+				ImGui::SliderFloat("normalStrength", &normalStrength, 0.0f, 100.0f);
 			}
 			ImGui::End();
 			
@@ -70,10 +68,9 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 			fireEffect->Bind();
 			{
 				fireEffect->SetUniform("time", timer.GetTotalSeconds());
-				fireEffect->SetUniform("normalStrength", normalStrength);
-				//fireEffect->SetUniform("fireMovement", fireMovement);
+				fireEffect->SetUniform("fireMovement", fireMovement);
 				fireEffect->SetUniform("distortionMovement", distortionMovement);
-				//fireEffect->SetUniform("distortionStrength", distortionStrength);
+				fireEffect->SetUniform("normalStrength", normalStrength);
 
 				colorFrameBuffer->Bind();
 				colorFrameBuffer->Clear(0.0f, 0.0f, 0.0f, 0.0f);
