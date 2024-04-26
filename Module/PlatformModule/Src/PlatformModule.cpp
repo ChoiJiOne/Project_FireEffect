@@ -6,6 +6,8 @@
 #include "InputController.h"
 #include "PlatformModule.h"
 
+#define IDI_EXE_ICON 101
+
 bool PlatformModule::bIsInit = false;
 bool PlatformModule::bIsFullscreenMode = false;
 bool PlatformModule::bIsMinimize = false;
@@ -289,8 +291,8 @@ PlatformModule::Errors PlatformModule::RegisterWindowClass()
 	wcexw.cbClsExtra = 0;
 	wcexw.cbWndExtra = 0;
 	wcexw.hInstance = instance;
-	wcexw.hIcon = LoadIcon(instance, IDI_APPLICATION);
-	wcexw.hIconSm = LoadIcon(instance, IDI_APPLICATION);
+	wcexw.hIcon = LoadIcon(instance, MAKEINTRESOURCE(IDI_EXE_ICON));
+	wcexw.hIconSm = LoadIcon(instance, MAKEINTRESOURCE(IDI_EXE_ICON));
 	wcexw.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcexw.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcexw.lpszMenuName = nullptr;
