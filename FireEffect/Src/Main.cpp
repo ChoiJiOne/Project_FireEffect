@@ -29,10 +29,6 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 	int32_t height = 600;
 	ColorFrameBuffer* colorFrameBuffer = RenderModule::CreateResource<ColorFrameBuffer>(width, height);
 
-	float a = 12.9898f;
-	float b = 78.233f;
-	float c = 43758.5453f;
-	
 	PlatformModule::RunLoop(
 		[&](float deltaSeconds)
 		{
@@ -51,11 +47,6 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 			{
 				ImGui::SetWindowPos(ImVec2(700.0f, 0.0f));
 				ImGui::SetWindowSize(ImVec2(300.0f, 800.0f));
-
-				ImGui::Text("Random");
-				ImGui::SliderFloat("a", &a, 0.0f, 25.0f);
-				ImGui::SliderFloat("b", &b, 0.0f, 150.0f);
-				ImGui::SliderFloat("c", &c, 0.0f, 100000.0f);
 			}
 			ImGui::End();
 			
@@ -64,10 +55,6 @@ int32_t WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstan
 			fireEffect->Bind();
 			{
 				colorFrameBuffer->Bind();
-				fireEffect->SetUniform("a", a);
-				fireEffect->SetUniform("b", b);
-				fireEffect->SetUniform("c", c);
-
 				colorFrameBuffer->Clear(0.0f, 0.0f, 0.0f, 0.0f);
 				glBindImageTexture(0, colorFrameBuffer->GetColorBufferID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 				glDispatchCompute(width, height, 1);
