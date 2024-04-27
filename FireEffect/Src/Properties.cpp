@@ -66,7 +66,7 @@ void Properties::Render()
 	uint32_t height = 0;
 	colorFrameBuffer_->GetSize(width, height);
 	glBindImageTexture(0, colorFrameBuffer_->GetColorBufferID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-	glDispatchCompute(width, height, 1);
+	glDispatchCompute(width / 9, height / 9, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 	fireEffect_->Unbind();
