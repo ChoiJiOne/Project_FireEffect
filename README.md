@@ -1,5 +1,8 @@
 # Project - FireEffect
 - 불 효과를 구현하는 프로젝트의 `0.0`입니다.
+
+![animation](./Image/animation.gif)
+
 <br><br>
 
 
