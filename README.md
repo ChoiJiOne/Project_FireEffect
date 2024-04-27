@@ -41,6 +41,42 @@ GenerateProjectFiles_vs2022.bat
 <br><br>
 
 
+## How to Build Solution?
+
+이 프로젝트는 Visual Studio를 실행하지 않은 상태에서 빌드할 수 있는 기능을 지원합니다. 빌드 스크립트가 지원하는 빌드 모드는 `Debug`, `Release`, `RelWithDebInfo`, `MinSizeRel`으로, 각각의 특징은 다음과 같습니다.
+
+| mode | description |
+|:---:|:---|
+| Debug | 빌드 과정에서 최적화를 수행하지 않고, 디버그 정보 파일(.pdb)을 생성합니다. |
+| Release | 빌드 과정에서 최적화를 수행하고, 디버그 정보 파일(.pdb)을 생성하지 않습니다. |
+| RelWithDebInfo | 빌드 과정에서 최적화를 수행하고, 디버그 정보 파일(.pdb)을 생성합니다. |
+| MinSizeRel  | 빌드 과정에서 최적화를 수행하고, 최소 크기로 최적화하며 디버그 정보 파일(.pdb)을 생성하지 않습니다. |
+
+따라서, `CMD` 혹은 `PowerShell`에서 다음 명령어를 수행하시면 각 모드에 따라 빌드를 수행할 수 있습니다.
+
+### Debug
+```
+Build_Debug.bat
+```
+
+### Release
+```
+Build_Release.bat
+```
+
+### RelWithDebInfo
+```
+Build_RelWithDebInfo.bat
+```
+
+### MinSizeRel
+```
+Build_MinSizeRel.bat
+```
+
+> 위의 스크립트 모두 `CMD` 혹은 `PowerShell`에서 실행하지 않고 그냥 실행해도 동작합니다.
+
+
 ## 참고 자료
 - [LearnOpenGL : Compute Shaders](https://learnopengl.com/Guest-Articles/2022/Compute-Shaders/Introduction)
 - [Shadertoy - Fire Shader](https://greentec.github.io/shadertoy-fire-shader-en/)
