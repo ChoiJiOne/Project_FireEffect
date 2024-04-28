@@ -4,6 +4,9 @@
 
 ## Version
 - [0.0](https://github.com/ChoiJiOne/Project_FireEffect/tree/0.0)
+
+  ![0.0](https://github.com/ChoiJiOne/Project_FireEffect/blob/0.0/Image/animation.gif)
+
 <br><br>
 
 ## License
